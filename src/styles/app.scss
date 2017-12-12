@@ -1,9 +1,10 @@
-//вначале глобальные стили
+@import 'normalize';
+
 body{
-    margin: 100px;
+    margin: 0;
     background: #ccc;
 }
-//потом импортим другие стили
+
 @import 'common/menu';
 @import 'common/technologies';
 @import 'common/slider';

@@ -4,8 +4,9 @@ const pug = require('gulp-pug');// паг в константу паг, чтоб
 const sass = require('gulp-sass');
 const rename = require('gulp-rename');
 const sourcemaps = require('gulp-sourcemaps');
+var autoprefixer = require('gulp-autoprefixer');
 
-const del = require('del');
+const del  = require('del');
 
 const browserSync = require('browser-sync').create();
 
@@ -16,11 +17,10 @@ const webpackConfig = require('./webpack.config.js');
 
 // все пути вынести в один объект, чтобы можно было быстро их менять
 const paths = {
-    root: './build',// корень проэкта
+    root: './build', // корень проэкта
     templates: {// шаблоны
-        pages: 'src/templates/pages/*.pug',// все странички
-        src: 'src/templates/**/*.pug',// все исходники
-        // dest: 'build/assets'//куда будет складываться
+        pages: 'src/templates/pages/*.pug', // все странички
+        src: 'src/templates/**/*.pug', // все исходники
     },
     styles: {
         src: 'src/styles/**/*.scss',
@@ -33,14 +33,17 @@ const paths = {
     scripts: {
         src: 'src/scripts/**/*.js',
         dest: 'build/assets/scripts/'
+    },
+    fonts: {
+        src: 'src/fonts/*.{woff,woff2}',
+        dest: 'build/assets/fonts/'
     }
 }
 
 // pug
-// вместо task
 function templates() {
     return gulp.src(paths.templates.pages)
-        .pipe(pug({pretty: true}))// красивые отступы
+        .pipe(pug({ pretty: true }))// красивые отступы
         .pipe(gulp.dest(paths.root));// куда положить
 }
 
@@ -48,10 +51,18 @@ function templates() {
 function styles() {
     return gulp.src('./src/styles/app.scss')// исходная точка
         .pipe(sourcemaps.init())
-        .pipe(sass({outputStyle: 'compressed'}))// компиляция
+        .pipe( autoprefixer({ browsers: ['last 2 versions'], cascade: false }))
+//        .pipe( gulp.dest('dist/js'))
+        .pipe(sass({ outputStyle: 'compressed' }))// компиляция
         .pipe(sourcemaps.write())
-        .pipe(rename({suffix: '.min'})// не обязательно
-        .pipe(gulp.dest(paths.styles.dest))// куда положить
+        .pipe(rename({ suffix: '.min' }))// не обязательно
+        .pipe(gulp.dest(paths.styles.dest));// куда положить
+}
+
+// перенос шрифтов
+function fontsmove() {
+    return gulp.src(paths.fonts.src)
+        .pipe(gulp.dest(paths.fonts.dest));
 }
 
 // очистка
@@ -92,11 +103,13 @@ function images() {
 
 exports.templates = templates;
 exports.styles = styles;
-exports.clean = clean;// иногда нужно вызывать в серии задач, иногда просто удалить
+exports.clean = clean;// удаление
 exports.images = images;// сжатие картинок
+exports.fontsmove = fontsmove;
+exports.scripts = scripts;
 
 gulp.task('default', gulp.series(
     clean,
-    gulp.parallel(styles, templates, images, scripts),
+    gulp.parallel(styles, templates, images, scripts, fontsmove),
     gulp.parallel(watch, server)
 ));

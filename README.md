@@ -1,12 +1,11 @@
-Gulp 12-2017
+### Для работы сборки должны быть установлены
 
-Для работы сборки у вас должны быть установлены
+### npm 5
+### gulp-cli
+### eslint-config-airbnb-base eslint-plugin-import
 
-npm 5
-gulp-cli
+### Как установить проект
 
-Как установить проект
-
-clone this repo
-npm i
-gulp# Start
+### clone this repo
+### npm i
+### gulp
